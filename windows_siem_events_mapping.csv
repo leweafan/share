@@ -128,27 +128,27 @@
 11;File created;;Unusual File Creation - Alternate Data Stream;47;Medium;sysmon
 11;File created;;Unusual File Modification by dns.exe;73;High;sysmon
 11;File created;;Microsoft Exchange Server UM Writing Suspicious Files;47;Medium;sysmon
-"12,13";Registry object added or deleted;;Scheduled Task Created by a Windows Script;47;Medium;not working
-"12,13";Registry object added or deleted;;Component Object Model Hijacking;47;Medium;sysmon
-"12,13";Registry object added or deleted;;Creation of a Hidden Local User Account;73;High;sysmon
-"12,13";Registry object added or deleted;;Creation or Modification of Root Certificate;21;Low;sysmon
-"12,13";Registry object added or deleted;;Disabling User Account Control via Registry Modification;47;Medium;sysmon
-"12,13";Registry object added or deleted;;DNS-over-HTTPS Enabled via Registry;21;Low;sysmon
-"12,13";Registry object added or deleted;;Installation of Custom Shim Databases;21;Medium;sysmon
-"12,13";Registry object added or deleted;;Installation of Security Support Provider;47;Medium;sysmon
-"12,13";Registry object added or deleted;;Modification of AmsiEnable Registry Key;73;High;sysmon
-"12,13";Registry object added or deleted;;Persistence via Hidden Run Key Detected;73;High;sysmon
-"12,13";Registry object added or deleted;;Persistence via Microsoft Office AddIns;73;High;sysmon
-"12,13";Registry object added or deleted;;Persistence via WMI Standard Registry Provider;73;High;sysmon
-"12,13";Registry object added or deleted;;Port Forwarding Rule Addition;47;Medium;sysmon
-"12,13";Registry object added or deleted;;Potential Application Shimming via Sdbinst;21;Low;sysmon
-"12,13";Registry object added or deleted;;Potential LSA Authentication Package Abuse;47;Medium;sysmon
-"12,13";Registry object added or deleted;;Potential Remote Desktop Shadowing Activity;73;High;sysmon
-"12,13";Registry object added or deleted;;RDP Enabled via Registry;47;Medium;sysmon
-"12,13";Registry object added or deleted;;Registry Persistence via AppCert DLL;47;Medium;sysmon
-"12,13";Registry object added or deleted;;Registry Persistence via AppInit DLL;47;Medium;sysmon
-"12,13";Registry object added or deleted;;Remote Scheduled Task Creation;47;Medium;sysmon
-"12,13";Registry object added or deleted;;Unusual Persistence via Services Registry;21;Low;sysmon
+12-13;Registry object added or deleted;;Scheduled Task Created by a Windows Script;47;Medium;not working
+12-13;Registry object added or deleted;;Component Object Model Hijacking;47;Medium;sysmon
+12-13;Registry object added or deleted;;Creation of a Hidden Local User Account;73;High;sysmon
+12-13;Registry object added or deleted;;Creation or Modification of Root Certificate;21;Low;sysmon
+12-13;Registry object added or deleted;;Disabling User Account Control via Registry Modification;47;Medium;sysmon
+12-13;Registry object added or deleted;;DNS-over-HTTPS Enabled via Registry;21;Low;sysmon
+12-13;Registry object added or deleted;;Installation of Custom Shim Databases;21;Medium;sysmon
+12-13;Registry object added or deleted;;Installation of Security Support Provider;47;Medium;sysmon
+12-13;Registry object added or deleted;;Modification of AmsiEnable Registry Key;73;High;sysmon
+12-13;Registry object added or deleted;;Persistence via Hidden Run Key Detected;73;High;sysmon
+12-13;Registry object added or deleted;;Persistence via Microsoft Office AddIns;73;High;sysmon
+12-13;Registry object added or deleted;;Persistence via WMI Standard Registry Provider;73;High;sysmon
+12-13;Registry object added or deleted;;Port Forwarding Rule Addition;47;Medium;sysmon
+12-13;Registry object added or deleted;;Potential Application Shimming via Sdbinst;21;Low;sysmon
+12-13;Registry object added or deleted;;Potential LSA Authentication Package Abuse;47;Medium;sysmon
+12-13;Registry object added or deleted;;Potential Remote Desktop Shadowing Activity;73;High;sysmon
+12-13;Registry object added or deleted;;RDP Enabled via Registry;47;Medium;sysmon
+12-13;Registry object added or deleted;;Registry Persistence via AppCert DLL;47;Medium;sysmon
+12-13;Registry object added or deleted;;Registry Persistence via AppInit DLL;47;Medium;sysmon
+12-13;Registry object added or deleted;;Remote Scheduled Task Creation;47;Medium;sysmon
+12-13;Registry object added or deleted;;Unusual Persistence via Services Registry;21;Low;sysmon
 13;Registry value set;;Encoded Executable Stored in the Registry;47;Medium;sysmon
 13;Registry value set;;Image File Execution Options Injection;41;Medium;sysmon
 13;Registry value set;;Modification of WDigest Security Provider;73;High;sysmon
