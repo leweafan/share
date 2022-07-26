@@ -70,6 +70,5 @@
 "Additional events","611101","User authentication succeeded when accessing the Secure Firewall ASA. The username is hidden when invalid or unknown, but appears when valid or the no logging hide username command has been configured"
 "Additional events","611102","User authentication failed when attempting to access the Secure Firewall ASA. The username is hidden when invalid or unknown, but appears when valid or the no logging hide username command has been configured"
 "Additional events","611103","The specified user logged out"
-"Additional events","716004","The WebVPN user in this group has been denied access to this URL. The WebVPN user access to various locations can be controlled using WebVPN-specific ACLs. In this case, a particular entry is denying access to this URL."
 "Additional events","716039","Before a WebVPN session starts, the user must be authenticated successfully by a local or remote server (for example, RADIUS or TACACS+). In this case, the user credentials (username and password) either did not match, or the user does not have permission to start a WebVPN session. The username is hidden when invalid or unknown, but appears when valid or the no logging hide username command has been configured"
 "Additional events","734001","The DAP records that were selected for the connection are listed"
