@@ -26,8 +26,7 @@
 "External Threats/Attacks","733101","Scanning threat detected"
 "External Threats/Attacks","733102","Host has been shunned by the threat detection engine."
 "External Threats/Attacks","733103","Host is removed by threat detection engine"
-"External Threats/Attacks","733100 – Check the string – Object","Values for Object : 
-– Firewall 
+"External Threats/Attacks","733100 – Check the string – Object","Values for Object :\n– Firewall 
 – Bad pkts 
 – Rate limit 
 – DoS attck 
