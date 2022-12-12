@@ -1,0 +1,226 @@
+{
+  "custom-enrich-log-pipeline" : {
+    "description" : "Pipeline for Filebeat logs enrichment",
+    "processors" : [
+      {
+        "set" : {
+          "value" : "{{_ingest.timestamp}}",
+          "field" : "event.ingested"
+        }
+      },
+      {
+        "geoip" : {
+          "if" : "ctx.source?.geo == null",
+          "field" : "source.ip",
+          "target_field" : "source.geo",
+          "ignore_missing" : true
+        }
+      },
+      {
+        "geoip" : {
+          "if" : "ctx.destination?.geo == null",
+          "field" : "destination.ip",
+          "target_field" : "destination.geo",
+          "ignore_missing" : true
+        }
+      },
+      {
+        "geoip" : {
+          "field" : "client.ip",
+          "target_field" : "client.geo",
+          "ignore_missing" : true,
+          "if" : "ctx.client?.geo == null"
+        }
+      },
+      {
+        "geoip" : {
+          "field" : "server.ip",
+          "target_field" : "server.geo",
+          "ignore_missing" : true,
+          "if" : "ctx.server?.geo == null"
+        }
+      },
+      {
+        "geoip" : {
+          "target_field" : "source.as",
+          "properties" : [
+            "asn",
+            "organization_name"
+          ],
+          "ignore_missing" : true,
+          "database_file" : "GeoLite2-ASN.mmdb",
+          "field" : "source.ip"
+        }
+      },
+      {
+        "geoip" : {
+          "database_file" : "GeoLite2-ASN.mmdb",
+          "field" : "destination.ip",
+          "target_field" : "destination.as",
+          "properties" : [
+            "asn",
+            "organization_name"
+          ],
+          "ignore_missing" : true
+        }
+      },
+      {
+        "geoip" : {
+          "field" : "client.ip",
+          "target_field" : "client.as",
+          "database_file" : "GeoLite2-ASN.mmdb",
+          "properties" : [
+            "asn",
+            "organization_name"
+          ],
+          "ignore_missing" : true
+        }
+      },
+      {
+        "geoip" : {
+          "field" : "server.ip",
+          "target_field" : "server.as",
+          "database_file" : "GeoLite2-ASN.mmdb",
+          "properties" : [
+            "asn",
+            "organization_name"
+          ],
+          "ignore_missing" : true
+        }
+      },
+      {
+        "rename" : {
+          "field" : "source.as.asn",
+          "target_field" : "source.as.number",
+          "ignore_missing" : true
+        }
+      },
+      {
+        "rename" : {
+          "ignore_missing" : true,
+          "field" : "source.as.organization_name",
+          "target_field" : "source.as.organization.name"
+        }
+      },
+      {
+        "rename" : {
+          "ignore_missing" : true,
+          "field" : "destination.as.asn",
+          "target_field" : "destination.as.number"
+        }
+      },
+      {
+        "rename" : {
+          "target_field" : "destination.as.organization.name",
+          "ignore_missing" : true,
+          "field" : "destination.as.organization_name"
+        }
+      },
+      {
+        "rename" : {
+          "field" : "client.as.asn",
+          "target_field" : "client.as.number",
+          "ignore_missing" : true
+        }
+      },
+      {
+        "rename" : {
+          "field" : "client.as.organization_name",
+          "target_field" : "client.as.organization.name",
+          "ignore_missing" : true
+        }
+      },
+      {
+        "rename" : {
+          "field" : "server.as.asn",
+          "target_field" : "server.as.number",
+          "ignore_missing" : true
+        }
+      },
+      {
+        "rename" : {
+          "field" : "server.as.organization_name",
+          "target_field" : "server.as.organization.name",
+          "ignore_missing" : true
+        }
+      },
+      {
+        "append" : {
+          "field" : "related.user",
+          "value" : [
+            "{{user.name}}"
+          ],
+          "if" : "ctx?.user?.name != null"
+        }
+      },
+      {
+        "append" : {
+          "field" : "related.ip",
+          "value" : [
+            "{{source.ip}}"
+          ],
+          "if" : "ctx?.source?.ip != null"
+        }
+      },
+      {
+        "append" : {
+          "field" : "related.ip",
+          "value" : [
+            "{{destination.ip}}"
+          ],
+          "if" : "ctx?.destination?.ip != null"
+        }
+      },
+      {
+        "append" : {
+          "field" : "related.ip",
+          "value" : [
+            "{{client.ip}}"
+          ],
+          "if" : "ctx?.client?.ip != null"
+        }
+      },
+      {
+        "append" : {
+          "field" : "related.ip",
+          "value" : [
+            "{{server.ip}}"
+          ],
+          "if" : "ctx?.server?.ip != null"
+        }
+      },
+      {
+        "append" : {
+          "field" : "related.ip",
+          "value" : [
+            "{{observer.ip}}"
+          ],
+          "if" : "ctx?.observer?.ip != null"
+        }
+      },
+      {
+        "append" : {
+          "field" : "related.ip",
+          "value" : [
+            "{{network.ip}}"
+          ],
+          "if" : "ctx?.network?.ip != null"
+        }
+      },
+      {
+        "user_agent" : {
+          "field" : "user_agent.original",
+          "ignore_missing" : true
+        }
+      }
+    ],
+    "on_failure" : [
+      {
+        "set" : {
+          "field" : "error.message",
+          "value" : "{{ _ingest.on_failure_message }}"
+        }
+      }
+    ]
+  }
+}
