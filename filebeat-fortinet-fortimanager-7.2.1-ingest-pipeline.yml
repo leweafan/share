@@ -1,0 +1,356 @@
+{
+  "description": "Fortinet FortiManager v7.2.1 parser. Author: leweafan",
+  "processors": [
+    {
+      "grok": {
+        "field": "event.original",
+        "patterns": [
+          """<%{INT}>date=%{NOTSPACE:fortimanager.date} time=%{NOTSPACE:fortimanager.time} tz=\"%{ISO8601_TIMEZONE:fortimanager.tz}\" devname=%{NOTSPACE:fortimanager.devname} device_id=%{NOTSPACE:fortimanager.device_id} log_id=%{NOTSPACE:fortimanager.log_id} type=%{NOTSPACE:fortimanager.type} subtype=%{NOTSPACE:fortimanager.subtype} pri=%{NOTSPACE:fortimanager.pri} desc=\"%{DATA:fortimanager.desc}\" %{GREEDYDATA:fortimanager.message}"""
+        ]
+      }
+    },
+    {
+      "rename": {
+        "field": "fortimanager.log_id",
+        "target_field": "event.code"
+      }
+    },
+    {
+      "rename": {
+        "field": "fortimanager.devname",
+        "target_field": "oberver.name"
+      }
+    },
+    {
+      "rename": {
+        "field": "fortimanager.desc",
+        "target_field": "event.kind"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" userfrom=\"%{fortimanager.userfrom}\" msg=\"%{fortimanager.msg}\" operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" action=\"%{fortimanager.action}\"",
+        "if": """["0028037018", "0028037024", "0030039004", "0031040004", "0031040026", "0032041004", "0034043008", "0036045005"].contains(ctx.event.code)""",
+        "description": "0028037018, 0028037024, 0030039004, 0031040004, 0031040026, 0032041004, 0034043008, 0036045005"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" userfrom=\"%{fortimanager.userfrom}\" msg=\"%{fortimanager.msg}\" adom=\"%{fortimanager.adom}\" session_id=%{fortimanager.session_id} operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\"",
+        "if": """["0021030002", "0022031009", "0022031010", "0022031011"].contains(ctx.event.code)""",
+        "description": "0021030002, 0022031009, 0022031010, 0022031011"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" msg=\"%{fortimanager.msg}\" adom=\"%{fortimanager.adom}\" operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" title=\"%{fortimanager.title}\"",
+        "if": """["0008017005", "0008017007"].contains(ctx.event.code)""",
+        "description": "0008017005, 0008017007"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "msg=\"%{fortimanager.msg}\" operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" action=\"%{fortimanager.action}\"",
+        "if": """["0030039003", "0036045002"].contains(ctx.event.code)""",
+        "description": "0030039003, 0036045002"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "msg=\"%{fortimanager.msg}\" device=\"%{fortimanager.device}\" operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" dbstatus=\"%{fortimanager.dbstatus}\" confstatus=\"%{fortimanager.confstatus}\" condition=\"%{fortimanager.condition}\" dmstate=\"%{fortimanager.dmstate}\"",
+        "if": "ctx.event.code == '0012021018'",
+        "description": "0012021018"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "msg=\"%{fortimanager.msg}\" operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" package_type=\"%{fortimanager.package_type}\" user=\"%{fortimanager.user}\" package_desc=\"%{fortimanager.package_desc}\" version=\"%{fortimanager.version}\"",
+        "if": "ctx.event.code == '0017026009'",
+        "description": "0017026009"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "msg=\"%{fortimanager.msg}\" operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" user=\"%{fortimanager.user}\"",
+        "if": "ctx.event.code == '0017026013'",
+        "description": "0017026013"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "msg=\"%{fortimanager.msg}\" remote_ip=\"%{fortimanager.ip}\" remote_port=%{fortimanager.remote_port} operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\"",
+        "if": "ctx.event.code == '0001010075'",
+        "description": "0001010075"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" device=\"%{fortimanager.device}\" serial=\"%{fortimanager.serial}\" adom=\"%{fortimanager.adom}\" constmsg=\"%{fortimanager.msg}\" session_id=%{fortimanager.session_id} operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" revision=%{fortimanager.revision} dbstatus=\"%{fortimanager.dbstatus}\" confstatus=\"%{fortimanager.confstatus}\" vdoms=\"%{fortimanager.vdoms}\" result=\"%{fortimanager.result}\"",
+        "if": "ctx.event.code == '0012021015'",
+        "description": "0012021015"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": """user="%{fortimanager.user}" device="%{fortimanager.device}" serial="%{fortimanager.serial}" adom="%{fortimanager.adom}" constmsg="%{fortimanager.msg}" session_id=%{fortimanager.session_id} operation="%{fortimanager.operation}" performed_on="%{fortimanager.performed_on}" changes="%{fortimanager.changes}" revision=%{fortimanager.revision}""",
+        "if": "ctx.event.code == '0012021009'",
+        "description": "0012021009"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" msg=\"%{fortimanager.msg}\" adom=\"%{fortimanager.adom}\" operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" detail=\"%{fortimanager.detail}\" title=\"%{fortimanager.title}\"",
+        "if": "ctx.event.code == '0008017003'",
+        "description": "0008017003"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" msg=\"%{fortimanager.msg}\" adom=\"%{fortimanager.adom}\" operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" ppkgname=\"%{fortimanager.ppkgname}\"",
+        "if": "ctx.event.code == '0008017006'",
+        "description": "0008017006"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" msg=\"%{fortimanager.msg}\" adom=\"%{fortimanager.adom}\" session_id=%{fortimanager.session_id} operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" pkg=\"%{fortimanager.pkg}\"",
+        "if": "ctx.event.code == '0012021024'",
+        "description": "0012021024"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" msg=\"%{fortimanager.msg}\" remote_ip=\"%{fortimanager.ip}\" remote_port=%{fortimanager.remote_port} operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" valid=%{fortimanager.valid} authmsg=\"%{fortimanager.authmsg}\" extrainfo=\"%{fortimanager.extrainfo}\"",
+        "if": "ctx.event.code == '0001010014'",
+        "description": "0001010014"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" msg=\"%{fortimanager.msg}\" serial=\"%{fortimanager.serial}\" session_id=%{fortimanager.session_id} operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\"",
+        "if": "ctx.event.code == '0012021002'",
+        "description": "0012021002"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" userfrom=\"%{fortimanager.userfrom}\" msg=\"%{fortimanager.msg}\" adom=\"%{fortimanager.adom} operstat=\"%{fortimanager.operstat}\" session_id=%{fortimanager.session_id} operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" objtype=\"%{fortimanager.objtype}\" objname=\"%{fortimanager.objname}\"",
+        "if": "ctx.event.code == '0001010017'",
+        "description": "0001010017"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" userfrom=\"%{fortimanager.userfrom}\" msg=\"%{fortimanager.msg}\" adom=\"%{fortimanager.adom}\" adom_oid=%{fortimanager.adom_oid} operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\"",
+        "if": "ctx.event.code == '0034043006'",
+        "description": "0034043006"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" userfrom=\"%{fortimanager.userfrom}\" msg=\"%{fortimanager.msg}\" adom=\"%{fortimanager.adom}\" session_id=%{fortimanager.session_id} operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" instpkg=\"%{fortimanager.instpkg}\"",
+        "if": "ctx.event.code == '0012021023'",
+        "description": "0012021023"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": """user="%{fortimanager.user}" userfrom="%{fortimanager.userfrom}" msg="%{fortimanager.msg}" device="%{fortimanager.device}" serial="%{fortimanager.serial}" dev_oid=%{fortimanager.dev_oid} session_id=%{fortimanager.session_id} operation="%{fortimanager.operation}" performed_on="%{fortimanager.performed_on}" changes="%{fortimanager.changes}" revision=%{fortimanager.revision}""",
+        "if": "ctx.event.code == '0012021008'",
+        "description": "0012021008"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": """user="%{fortimanager.user}" userfrom="%{fortimanager.userfrom}" msg="%{fortimanager.msg}" logdev_name="%{fortimanager.logdev_name}" logdev_id="%{fortimanager.logdev_id}" adom="%{fortimanager.adom}" operation="%{fortimanager.operation}" performed_on="%{fortimanager.performed_on}" changes="%{fortimanager.changes}" logdev_offline_duration=%{fortimanager.logdev_offline_duration} logdev_last_logging=%{fortimanager.logdev_last_logging}""",
+        "if": "ctx.event.code == '0029038009'",
+        "description": "0029038009"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" userfrom=\"%{fortimanager.userfrom}\" msg=\"%{fortimanager.msg}\" operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" action=\"%{fortimanager.action}\" runfrom=\"%{fortimanager.runfrom}\"",
+        "if": "ctx.event.code == '0032041002'",
+        "description": "0032041002"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" userfrom=\"%{fortimanager.userfrom}\" msg=\"%{fortimanager.msg}\" operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" adminprof=\"%{fortimanager.adminprof}\"",
+        "if": "ctx.event.code == '0001010019'",
+        "description": "0001010019"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": """user="%{fortimanager.user}" userfrom="%{fortimanager.userfrom}" msg="%{fortimanager.msg}" operation="%{fortimanager.operation}" performed_on="%{fortimanager.performed_on}" changes="%{fortimanager.changes}" lograte=%{fortimanager.lograte} msgrate=%{fortimanager.msgrate} logratelimit=%{fortimanager.logratelimit} logratepeak=%{fortimanager.logratepeak} action="%{fortimanager.action}" cpuusage=%{fortimanager.cpuusage} memusage=%{fortimanager.memusage}""",
+        "if": "ctx.event.code == '0001010081'",
+        "description": "0001010081"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" userfrom=\"%{fortimanager.userfrom}\" msg=\"%{fortimanager.msg}\" session_id=%{fortimanager.session_id} operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" adomlock=\"%{fortimanager.adomlock}\"",
+        "if": "ctx.event.code == '0001010032'",
+        "description": "0001010032"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" userfrom=\"%{fortimanager.userfrom}\" msg=\"%{fortimanager.msg}\" session_id=%{fortimanager.session_id} operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" adminprof=\"%{fortimanager.adminprof}\"",
+        "if": "ctx.event.code == '0001010018'",
+        "description": "0001010018"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" userfrom=\"%{fortimanager.userfrom}\" msg=\"%{fortimanager.msg}\" session_id=%{fortimanager.session_id} operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" adminprof=\"%{fortimanager.adminprof}\" user_type=\"%{fortimanager.user_type}\"",
+        "if": "ctx.event.code == '0001010021'",
+        "description": "0001010021"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" userfrom=\"%{fortimanager.userfrom}\" msg=\"%{fortimanager.msg}\" session_id=%{fortimanager.session_id} operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" objname=\"%{fortimanager.objname}\" path=\"%{fortimanager.path}\" objattr=\"%{fortimanager.objattr}\" cli_act=\"%{fortimanager.cli_act}\" cmd_from=\"%{fortimanager.cmd_from}\"",
+        "if": "ctx.event.code == '0001010026'",
+        "description": "0001010026"
+      }
+    },
+    {
+      "dissect": {
+        "field": "fortimanager.message",
+        "pattern": "user=\"%{fortimanager.user}\" userfrom=\"%{fortimanager.userfrom}\" operation=\"%{fortimanager.operation}\" performed_on=\"%{fortimanager.performed_on}\" changes=\"%{fortimanager.changes}\" pid=%{fortimanager.pid} function=\"%{fortimanager.function}\"",
+        "if": "ctx.event.code == '0020029002'",
+        "description": "0020029002"
+      }
+    },
+    {
+      "remove": {
+        "field": "fortimanager.message"
+      }
+    },
+    {
+      "rename": {
+        "field": "fortimanager.user",
+        "target_field": "user.name",
+        "ignore_missing": true
+      }
+    },
+    {
+      "rename": {
+        "field": "fortimanager.msg",
+        "target_field": "message",
+        "ignore_missing": true
+      }
+    },
+    {
+      "rename": {
+        "field": "fortimanager.ip",
+        "target_field": "source.ip",
+        "ignore_missing": true
+      }
+    },
+    {
+      "grok": {
+        "field": "fortimanager.userfrom",
+        "patterns": [
+          """(GUI|jconsole)\(%{IP:source.ip}\)"""
+        ],
+        "ignore_missing": true
+      }
+    },
+    {
+      "geoip": {
+        "field": "source.ip",
+        "target_field": "source.geo",
+        "ignore_missing": true
+      }
+    },
+    {
+      "geoip": {
+        "target_field": "destination.geo",
+        "ignore_missing": true,
+        "field": "destination.ip"
+      }
+    },
+    {
+      "geoip": {
+        "ignore_missing": true,
+        "database_file": "GeoLite2-ASN.mmdb",
+        "field": "source.ip",
+        "target_field": "source.as",
+        "properties": [
+          "asn",
+          "organization_name"
+        ]
+      }
+    },
+    {
+      "geoip": {
+        "database_file": "GeoLite2-ASN.mmdb",
+        "field": "destination.ip",
+        "target_field": "destination.as",
+        "properties": [
+          "asn",
+          "organization_name"
+        ],
+        "ignore_missing": true
+      }
+    },
+    {
+      "rename": {
+        "ignore_missing": true,
+        "field": "source.as.asn",
+        "target_field": "source.as.number"
+      }
+    },
+    {
+      "rename": {
+        "target_field": "source.as.organization.name",
+        "ignore_missing": true,
+        "field": "source.as.organization_name"
+      }
+    },
+    {
+      "rename": {
+        "target_field": "destination.as.number",
+        "ignore_missing": true,
+        "field": "destination.as.asn"
+      }
+    },
+    {
+      "rename": {
+        "field": "destination.as.organization_name",
+        "target_field": "destination.as.organization.name",
+        "ignore_missing": true
+      }
+    }
+  ]
+}
