@@ -12,13 +12,14 @@
     {
       "rename": {
         "field": "fortimanager.log_id",
-        "target_field": "event.code"
+        "target_field": "event.code",
+        "ignore_failure": true
       }
     },
     {
       "rename": {
         "field": "fortimanager.devname",
-        "target_field": "oberver.name"
+        "target_field": "observer.name"
       }
     },
     {
@@ -278,6 +279,13 @@
       }
     },
     {
+      "rename": {
+        "field": "fortimaanger.device_id",
+        "target_field": "observer.serial_number",
+        "ignore_missing": true
+      }
+    },
+    {
       "grok": {
         "field": "fortimanager.userfrom",
         "patterns": [
@@ -350,6 +358,43 @@
         "field": "destination.as.organization_name",
         "target_field": "destination.as.organization.name",
         "ignore_missing": true
+      }
+    },
+    {
+      "append": {
+        "field": "event.category",
+        "value": [
+          "authentication"
+        ],
+        "if": "['login failed', 'login'].contains(ctx.fortimanager.operation)"
+      }
+    },
+    {
+      "append": {
+        "field": "event.outcome",
+        "value": [
+          "success"
+        ],
+        "if": "ctx.fortimanager.operation == 'login'"
+      }
+    },
+    {
+      "append": {
+        "field": "event.outcome",
+        "value": [
+          "failure"
+        ],
+        "if": "ctx.fortimanager.operation == 'login failed'"
+      }
+    }
+  ],
+  "on_failure": [
+    {
+      "append": {
+        "field": "error.message",
+        "value": [
+          "{{ _ingest.on_failure_message }}"
+        ]
       }
     }
   ]
