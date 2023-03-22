@@ -1,6 +1,6 @@
-// This is multilevel vega exammple based on article https://www.elastic.co/blog/sankey-visualization-with-vega-in-kibana
+// This is multilevel vega exammple based on article https://www.elastic.co/blog/sankey-visualization-with-vega-in-kibana 
 {
-  "$schema": "https://vega.github.io/schema/vega/v3.0.json",
+  "$schema": "https://vega.github.io/schema/vega/v5.0.json",
   "data": [
     {
       "name": "rawData",
@@ -198,15 +198,32 @@
           "type": "formula",
           "expr": "datum.size/domain('y')[1]",
           "as": "percentage"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.stack == 'stk2'",
+          "as": "sortField"
+        },
+        {
+          "type": "stack",
+          "groupby": ["stack"],
+          "sort": {"field": "sortField", "order": "descending"},
+          "field": "size"
         }
       ]
     },
     {
       "name": "edges2",
-      "source": "nodes",
+      "source": "nodes2",
       "transform": [
         {"type": "filter", "expr": "datum.stack == 'stk2'"},
-        {"type": "lookup", "from": "destinationNodes2", "key": "key", "fields": ["key"], "as": ["target"]},
+        {
+          "type": "lookup",
+          "from": "destinationNodes2",
+          "key": "key",
+          "fields": ["key"],
+          "as": ["target"]
+        },
         {
           "type": "linkpath",
           "orient": "horizontal",
@@ -216,21 +233,65 @@
           "targetY": {"expr": "scale('y', datum.target.yc)"},
           "targetX": {"expr": "scale('x', 'stk3')"}
         },
-        {"type": "formula", "expr": "range('y')[0]-scale('y', datum.size)", "as": "strokeWidth"},
-        {"type": "formula", "expr": "datum.size/domain('y')[1]", "as": "percentage"}
+        {
+          "type": "formula",
+          "expr": "range('y')[0]-scale('y', datum.size)",
+          "as": "strokeWidth"
+        },
+        {
+          "type": "formula",
+          "expr": "datum.size/domain('y')[1]",
+          "as": "percentage"
+        }
       ]
     }
   ],
   "scales": [
-    {"name": "x", "type": "band", "range": "width", "domain": ["stk1", "stk2", "stk3"], "paddingOuter": 0.01, "paddingInner": 0.98},
-    {"name": "y", "type": "linear", "range": "height", "domain": {"data": "nodes", "field": "y1"}},
-    {"name": "color", "type": "ordinal", "range": "category", "domain": {"data": "rawData", "fields": ["stk1", "stk2", "stk3"]}},
-    {"name": "stackNames", "type": "ordinal", "range": ["IP", "Host Request", "Cache Status"], "domain": ["stk1", "stk2", "stk3"]}
+    {
+      "name": "x",
+      "type": "band",
+      "range": "width",
+      "domain": ["stk1", "stk2", "stk3"],
+      "paddingOuter": 0.02,
+      "paddingInner": 0.98
+    },
+    {
+      "name": "y",
+      "type": "linear",
+      "range": "height",
+      "domain": {"data": "nodes", "field": "y1"}
+    },
+    {
+      "name": "color",
+      "type": "ordinal",
+      "range": "category",
+      "domain": {"data": "rawData", "fields": ["stk1", "stk2", "stk3"]}
+    },
+    {
+      "name": "stackNames",
+      "type": "ordinal",
+      "range": ["X1", "X2", "X3"],
+      "domain": ["stk1", "stk2", "stk3"]
+    }
+  ],
+  "axes": [
+    {
+      "orient": "bottom",
+      "scale": "x",
+      "encode": {
+        "labels": {
+          "update": {
+            "text": {"scale": "stackNames", "field": "value"}
+          }
+        }
+      }
+    },
+    {"orient": "left", "scale": "y"}
   ],
   "marks": [
     {
       "type": "path",
-      "name": "leftMark",
+      "name": "edgeMark",
       "from": {"data": "edges"},
       "clip": true,
       "encode": {
@@ -262,7 +323,7 @@
     },
     {
       "type": "path",
-      "name": "rightMark",
+      "name": "edgeMark2",
       "from": {"data": "edges2"},
       "clip": true,
       "encode": {
@@ -297,15 +358,22 @@
       "name": "groupMark",
       "from": {"data": "groups"},
       "encode": {
-        "enter": {"fill": {"scale": "color", "field": "grpId"}, "width": {"scale": "x", "band": 1}},
+        "enter": {
+          "fill": {"scale": "color", "field": "grpId"},
+          "width": {"scale": "x", "band": 1}
+        },
         "update": {
           "x": {"scale": "x", "field": "stack"},
           "y": {"field": "scaledY0"},
           "y2": {"field": "scaledY1"},
-          "fillOpacity": {"value": 1},
-          "tooltip": {"signal": "datum.grpId + ': ' + format(datum.total, ',.0f') + '   (' + format(datum.percentage, '.1%') + ')'"}
+          "fillOpacity": {"value": 0.6},
+          "tooltip": {
+            "signal": "datum.grpId + '   ' + format(datum.total, ',.0f') + '   (' + format(datum.percentage, '.1%') + ')'"
+          }
         },
-        "hover": {"fillOpacity": {"value": 1}}
+        "hover": {
+          "fillOpacity": {"value": 1}
+        }
       }
     },
     {
@@ -326,17 +394,45 @@
     },
     {
       "type": "group",
-      "data": [{"name": "dataForShowAll", "values": [{}], "transform": [{"type": "filter", "expr": "groupSelector"}]}],
-      "encode": {"enter": {"xc": {"signal": "width/1.85"}, "y": {"value": 0}, "width": {"value": 65}, "height": {"value": 25}}},
+      "data": [
+        {
+          "name": "dataForShowAll",
+          "values": [{}],
+          "transform": [{"type": "filter", "expr": "groupSelector"}]
+        }
+      ],
+      "encode": {
+        "enter": {
+          "xc": {"signal": "width/2"},
+          "y": {"value": 30},
+          "width": {"value": 80},
+          "height": {"value": 30}
+        }
+      },
       "marks": [
         {
           "type": "group",
           "name": "groupReset",
           "from": {"data": "dataForShowAll"},
           "encode": {
-            "enter": {"cornerRadius": {"value": 3.5}, "fill": {"value": "#666666"}, "height": {"field": {"group": "height"}}, "width": {"field": {"group": "width"}}},
-            "update": {"opacity": {"value": 1}},
-            "hover": {"fill": {"value": "#444444"}}
+            "enter": {
+              "cornerRadius": {"value": 6},
+              "fill": {"value": "#f5f5f5"},
+              "stroke": {"value": "#c1c1c1"},
+              "strokeWidth": {"value": 2},
+              "height": {
+                "field": {"group": "height"}
+              },
+              "width": {
+                "field": {"group": "width"}
+              }
+            },
+            "update": {
+              "opacity": {"value": 1}
+            },
+            "hover": {
+              "opacity": {"value": 0.7}
+            }
           },
           "marks": [
             {
@@ -344,13 +440,19 @@
               "interactive": false,
               "encode": {
                 "enter": {
-                  "xc": {"field": {"group": "width"}, "mult": 0.5},
-                  "yc": {"field": {"group": "height"}, "mult": 0.5, "offset": 1},
+                  "xc": {
+                    "field": {"group": "width"},
+                    "mult": 0.5
+                  },
+                  "yc": {
+                    "field": {"group": "height"},
+                    "mult": 0.5,
+                    "offset": 2
+                  },
                   "align": {"value": "center"},
                   "baseline": {"value": "middle"},
-                  "text": {"value": "Show All"},
-                  "fontSize": {"value": 14},
-                  "stroke": {"value": "#ecf0f1"}
+                  "fontWeight": {"value": "bold"},
+                  "text": {"value": "Show All"}
                 }
               }
             }
@@ -364,7 +466,10 @@
       "name": "groupHover",
       "value": {},
       "on": [
-        {"events": "@groupMark:mouseover", "update": "{stk1:datum.stack=='stk1' && datum.grpId, stk2:datum.stack=='stk2' && datum.grpId, stk3:datum.stack=='stk3' && datum.grpId}"},
+        {
+          "events": "@groupMark:mouseover",
+          "update": "{stk1:datum.stack=='stk1' && datum.grpId, stk2:datum.stack=='stk2' && datum.grpId, stk3:datum.stack=='stk3' && datum.grpId}"
+        },
         {"events": "mouseout", "update": "{}"}
       ]
     },
@@ -372,8 +477,17 @@
       "name": "groupSelector",
       "value": false,
       "on": [
-        {"events": "@groupMark:click!", "update": "{stack:datum.stack, stk1:datum.stack=='stk1' && datum.grpId, stk2:datum.stack=='stk2' && datum.grpId, stk3:datum.stack=='stk3' && datum.grpId}"},
-        {"events": [{"type": "click", "markname": "groupReset"}, {"type": "dblclick"}], "update": "false"}
+        {
+          "events": "@groupMark:click!",
+          "update": "{stack:datum.stack, stk1:datum.stack=='stk1' && datum.grpId, stk2:datum.stack=='stk2' && datum.grpId, stk3:datum.stack=='stk3' && datum.grpId}"
+        },
+        {
+          "events": [
+             {"type": "click", "markname": "groupReset"},
+             {"type": "dblclick"}
+          ],
+          "update": "false"
+        }
       ]
     }
   ]
